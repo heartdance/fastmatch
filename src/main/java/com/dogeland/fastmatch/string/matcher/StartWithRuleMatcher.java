@@ -3,6 +3,7 @@ package com.dogeland.fastmatch.string.matcher;
 import com.dogeland.fastmatch.string.StringRule;
 
 import java.util.*;
+import java.util.function.Consumer;
 
 /**
  * Created by htf on 2021/3/25.
@@ -25,5 +26,21 @@ public class StartWithRuleMatcher<T extends StringRule> extends ContainRuleMatch
             }
         }
         return result;
+    }
+
+    @Override
+    public void match(String matched, Consumer<List<T>> matchHandler) {
+        if (dict == null || matched == null || matched.length() == 0) {
+            return;
+        }
+        Set<String> added = new HashSet<>();
+        CharacterDict.Searcher<T> searcher = dict.createSearcher();
+        for (int i = 0; i < matched.length() && searcher.hasNext(); i++) {
+            char c = matched.charAt(i);
+            List<T> searched = searcher.next(c);
+            if (searched != null && added.add(matched.substring(0, i + 1))) {
+                matchHandler.accept(searched);
+            }
+        }
     }
 }

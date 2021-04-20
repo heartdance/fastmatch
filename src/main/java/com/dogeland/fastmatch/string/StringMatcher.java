@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.function.Consumer;
 
 /**
  * Created by htf on 2021/3/25.
@@ -17,7 +18,7 @@ public class StringMatcher<T extends StringRule> implements Matcher<T, String> {
 
     @Override
     public void setRules(List<T> rules) {
-        List<StringRuleMatcher<T>> matchers = new ArrayList<>(Arrays.asList(null, null, null, null));
+        List<StringRuleMatcher<T>> matchers = new ArrayList<>(Arrays.asList(null, null, null, null, null));
         for (T rule : rules) {
             StringRule.Type type = rule.getType();
             StringRuleMatcher<T> matcher = matchers.get(type.code());
@@ -44,6 +45,13 @@ public class StringMatcher<T extends StringRule> implements Matcher<T, String> {
         return result;
     }
 
+    @Override
+    public void match(String matched, Consumer<List<T>> matchHandler) {
+        for (StringRuleMatcher<T> stringRuleMatcher : matchers) {
+            stringRuleMatcher.match(matched, matchHandler);
+        }
+    }
+
     private StringRuleMatcher<T> createMatcherByType(StringRule.Type type) {
         switch (type) {
             case EQUAL:
@@ -54,6 +62,8 @@ public class StringMatcher<T extends StringRule> implements Matcher<T, String> {
                 return new StartWithRuleMatcher<>();
             case END_WITH:
                 return new EndWithRuleMatcher<>();
+            case WILDCARD:
+                return new WildcardRuleMatcher<>();
         }
         throw new IllegalArgumentException();
     }

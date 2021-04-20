@@ -35,7 +35,7 @@ public class StringRule implements Rule {
     }
 
     public enum Type {
-        EQUAL(0), START_WITH(1), END_WITH(2), CONTAIN(3);
+        EQUAL(0), START_WITH(1), END_WITH(2), CONTAIN(3), WILDCARD(4);
 
         private final int code;
 
@@ -53,6 +53,7 @@ public class StringRule implements Rule {
                 case 1: return START_WITH;
                 case 2: return END_WITH;
                 case 3: return CONTAIN;
+                case 4: return WILDCARD;
             }
             throw new IllegalArgumentException();
         }

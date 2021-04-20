@@ -28,22 +28,33 @@ public class CharacterDict<T extends StringRule> {
     }
 
     public Searcher<T> createSearcher() {
-        return new Searcher<>(this);
+        return new Searcher<>(nodeMap);
+    }
+
+    public static class CharacterNode<T extends StringRule> {
+        public Map<Character, CharacterNode<T>> childNodeMap;
+        public List<T> rules;
+
+        public void addRule(T rule) {
+            if (this.rules == null) {
+                this.rules = new LinkedList<>();
+            }
+            this.rules.add(rule);
+        }
     }
 
     public static class Searcher<T extends StringRule> {
-
-        private final CharacterDict<T> dict;
+        private final Map<Character, CharacterNode<T>> dict;
         private Map<Character, CharacterNode<T>> tempDict;
         private boolean hasNext = true;
 
-        private Searcher(CharacterDict<T> dict) {
+        public Searcher(Map<Character, CharacterNode<T>> dict) {
             this.dict = dict;
             reset();
         }
 
         public void reset() {
-            this.tempDict = dict.nodeMap;
+            this.tempDict = dict;
             this.hasNext = true;
         }
 
@@ -66,18 +77,6 @@ public class CharacterDict<T extends StringRule> {
                 tempDict = node.childNodeMap;
             }
             return node.rules;
-        }
-    }
-
-    private static class CharacterNode<T extends StringRule> {
-        public Map<Character, CharacterNode<T>> childNodeMap;
-        public List<T> rules;
-
-        public void addRule(T rule) {
-            if (this.rules == null) {
-                this.rules = new LinkedList<>();
-            }
-            this.rules.add(rule);
         }
     }
 }
